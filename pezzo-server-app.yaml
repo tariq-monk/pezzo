@@ -1,0 +1,78 @@
+namespace: pezzo-server-app
+pezzo-server-app:
+  defines: runnable
+  metadata:
+    name: pezzo-server-app
+    description: This is a NestJS backend application serving APIs.
+    icon: https://emojiapi.dev/api/v1/rocket.svg
+  containers:
+    pezzo-server-app:
+      build: .
+  services:
+    server-communication-port:
+      container: pezzo-server-app
+      port: <- $port
+      host-port: <- $port
+      publish: false
+      protocol: TCP
+      description: Port used by the app to listen for incoming connections
+  connections:
+    database:
+      target: postgresql/db
+      service: postgres
+    supertokens:
+      target: apache/apache
+      service: http
+    console:
+      target: apache/apache
+      service: http
+    kafka-brokers:
+      target: kafka/base
+      service: service
+    opensearch:
+      target: gitlab/server
+      service: http
+    redis:
+      target: redis/redis
+      service: redis-svc
+  variables:
+    port:
+      env: PORT
+      type: int
+      description: Port for the application to accept incoming requests
+      value: '3000'
+    pino-prettify:
+      env: PINO_PRETTIFY
+      type: string
+      description: Flag to toggle logging in a prettified format
+      value: 'true'
+    database-url:
+      env: DATABASE_URL
+      type: string
+      description: Postgres database connection URI
+      value: <- connection-hostname("database")
+    supertokens-connection-uri:
+      env: SUPERTOKENS_CONNECTION_URI
+      type: string
+      description: SuperTokens service URI
+      value: <- connection-hostname("supertokens")
+    console-host:
+      env: CONSOLE_HOST
+      type: string
+      description: URI of the console app
+      value: <- connection-hostname("console")
+    kafka-brokers:
+      env: KAFKA_BROKERS
+      type: string
+      description: Comma separated list of IP:port pairs pointing to Kafka brokers
+      value: <- connection-hostname("kafka-brokers")
+    opensearch-url:
+      env: OPENSEARCH_URL
+      type: string
+      description: OpenSearch service URL
+      value: <- connection-hostname("opensearch")
+    redis-url:
+      env: REDIS_URL
+      type: string
+      description: Redis service connection URI
+      value: <- connection-hostname("redis")
