@@ -1,0 +1,97 @@
+namespace: pezzo
+pezzo:
+  defines: runnable
+  metadata:
+    name: pezzo
+    description: >-
+      A modular full stack project with React, Node, Prisma, OpenSearch and
+      more.
+    icon: https://emojiapi.dev/api/v1/robot.svg
+  containers:
+    pezzo:
+      build: .
+  services:
+    main:
+      container: pezzo
+      port: 3000
+      host-port: 3000
+      publish: false
+      protocol: TCP
+      description: Main server port.
+    console:
+      container: pezzo
+      port: 4200
+      host-port: 4200
+      publish: false
+      protocol: TCP
+      description: Console interface port.
+  connections:
+    database:
+      target: postgresql/db
+      service: postgres
+    supertokens:
+      target: app-tutorial/app
+      service: app
+    console:
+      target: app-tutorial/app
+      service: app
+    kafka:
+      target: zookeeper/monk-zookeeper
+      service: zookeper
+    opensearch:
+      target: opensearch/base
+      service: service
+    redis:
+      target: redis/redis
+      service: redis-svc
+  variables:
+    nx-base-api-url:
+      env: NX_BASE_API_URL
+      type: string
+      description: Base API URL
+      value: http://localhost:3000
+    nx-supertokens-api-domain:
+      env: NX_SUPERTOKENS_API_DOMAIN
+      type: string
+      description: SuperTokens API Domain
+      value: http://localhost:3000
+    nx-supertokens-website-domain:
+      env: NX_SUPERTOKENS_WEBSITE_DOMAIN
+      type: string
+      description: SuperTokens Website Domain
+      value: http://localhost:4200
+    pino-prettify:
+      env: PINO_PRETTIFY
+      type: string
+      description: Prettify PINO logs
+      value: 'true'
+    database-url:
+      env: DATABASE_URL
+      type: string
+      description: Database connection string
+      value: <- connection-hostname("database")
+    supertokens-connection-uri:
+      env: SUPERTOKENS_CONNECTION_URI
+      type: string
+      description: Connect to SuperTokens service
+      value: <- connection-hostname("supertokens")
+    console-host:
+      env: CONSOLE_HOST
+      type: string
+      description: Host for the console app
+      value: <- connection-hostname("console")
+    kafka-brokers:
+      env: KAFKA_BROKERS
+      type: string
+      description: Kafka broker URL
+      value: <- connection-hostname("kafka")
+    opensearch-url:
+      env: OPENSEARCH_URL
+      type: string
+      description: URL for opensearch service
+      value: <- connection-hostname("opensearch")
+    redis-url:
+      env: REDIS_URL
+      type: string
+      description: URL for Redis service
+      value: <- connection-hostname("redis")
